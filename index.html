@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tkinter: Окно авторизации — Vice Code</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bungee&family=Nunito:wght@400;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --night:#1a0b2e; --card:#2a1450; --card2:#341a66; --pink:#ff3ea5; --orange:#ffa94d;
+  --blue:#5b8cff; --sand:#ffe9d6; --ink:#fff; --muted:#c9b8ee; --code:#12071f;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font:17px/1.55 Nunito,system-ui,sans-serif;color:var(--ink);
+  background:linear-gradient(180deg,#2b1055 0,#1a0b2e 520px,#1a0b2e 100%);min-height:100vh}
+h1,h2,h3{font-family:Bungee,Impact,sans-serif;font-weight:400;margin:0;letter-spacing:.5px}
+.wrap{max-width:860px;margin:0 auto;padding:0 18px}
+/* HERO */
+.hero{position:relative;overflow:hidden;padding:56px 0 90px;
+  background:linear-gradient(180deg,#5b3fa8 0,#c9568f 55%,#ffa94d 100%);
+  border-bottom:6px solid var(--pink)}
+.sun{position:absolute;left:50%;bottom:-120px;width:380px;height:380px;margin-left:-190px;border-radius:50%;
+  background:linear-gradient(#fff3b0,#ff7a59);opacity:.55}
+.palm{position:absolute;bottom:0;font-size:190px;line-height:1;filter:brightness(.25) saturate(2);opacity:.8}
+.hero .wrap{position:relative;text-align:center}
+.logo{display:inline-block;transform:rotate(-3deg);background:#fff;color:var(--night);padding:14px 22px;
+  border:5px solid var(--night);box-shadow:8px 8px 0 var(--pink);font-size:clamp(28px,8vw,56px);line-height:1}
+.logo small{display:block;font-size:.42em;color:var(--pink);margin-top:6px}
+.hero p{max-width:520px;margin:28px auto 0;font-weight:800;text-shadow:0 2px 0 rgba(0,0,0,.35)}
+.go{display:inline-block;margin-top:22px;background:var(--night);color:#fff;text-decoration:none;
+  font-family:Bungee;padding:12px 26px;border-radius:40px;border:3px solid #fff}
+.go:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
+/* MUSIC */
+.music{position:sticky;top:0;z-index:5;background:rgba(26,11,46,.92);backdrop-filter:blur(10px);
+  border-bottom:2px solid var(--card2);padding:10px 0}
+.music .wrap{display:flex;align-items:center;gap:12px}
+.mbtn{width:44px;height:44px;border-radius:50%;border:0;background:var(--pink);color:#fff;font-size:18px;cursor:pointer;flex:none}
+.mtitle{flex:1;min-width:0;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mtitle span{color:var(--muted);font-weight:400;display:block;font-size:13px}
+.bars{display:flex;gap:3px;align-items:flex-end;height:24px}
+.bars i{width:4px;background:var(--orange);height:6px;border-radius:2px}
+.playing .bars i{animation:b .8s ease-in-out infinite alternate}
+.playing .bars i:nth-child(2){animation-delay:.2s}.playing .bars i:nth-child(3){animation-delay:.4s}.playing .bars i:nth-child(4){animation-delay:.1s}
+@keyframes b{to{height:24px}}
+input[type=range]{accent-color:var(--pink);width:90px}
+/* SECTIONS */
+section{padding:44px 0 6px}
+h2{font-size:clamp(22px,5vw,32px);color:var(--sand);text-shadow:3px 3px 0 var(--pink);margin-bottom:6px}
+.lead{color:var(--muted);margin:0 0 20px}
+/* iOS-style cards */
+details{background:var(--card);border-radius:22px;margin:0 0 12px;border:1px solid rgba(255,255,255,.08);overflow:hidden}
+summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:14px;padding:16px 18px;font-weight:800;font-size:18px}
+summary::-webkit-details-marker{display:none}
+.ico{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-size:22px;flex:none;
+  background:linear-gradient(135deg,var(--pink),var(--orange))}
+.ico.b{background:linear-gradient(135deg,var(--blue),#a66bff)}
+summary .t small{display:block;color:var(--muted);font-weight:400;font-size:14px}
+summary::after{content:"›";margin-left:auto;font-size:30px;color:var(--muted);transition:transform .25s}
+details[open] summary::after{transform:rotate(90deg)}
+.body{padding:0 18px 18px}
+.body p{margin:0 0 12px}
+.tip{background:var(--card2);border-radius:14px;padding:12px 14px;margin:12px 0;border-left:5px solid var(--orange)}
+.tip b{color:var(--orange)}
+code.i{background:var(--code);padding:1px 7px;border-radius:6px;font-family:'Fira Code',monospace;font-size:.9em;color:#ffd3ec}
+/* CODE */
+.code{position:relative;background:var(--code);border-radius:16px;margin:12px 0;border:1px solid rgba(255,255,255,.08)}
+.code .bar{display:flex;align-items:center;gap:6px;padding:9px 12px;border-bottom:1px solid rgba(255,255,255,.08);font:13px 'Fira Code',monospace;color:var(--muted)}
+.bar i{width:11px;height:11px;border-radius:50%;background:#ff5f57}.bar i:nth-child(2){background:#febc2e}.bar i:nth-child(3){background:#28c840}
+.bar span{margin-left:6px}
+.bar button{margin-left:auto;background:var(--card2);color:#fff;border:0;border-radius:8px;padding:4px 10px;font:700 12px Nunito;cursor:pointer}
+pre{margin:0;padding:14px;overflow-x:auto;font:14px/1.6 'Fira Code',monospace;color:#f3e9ff}
+.k{color:#ff7bc0}.s{color:#ffc27a}.c{color:#8e7bb5}.f{color:#7fb0ff}
+/* FIGURES */
+figure{margin:14px 0;background:var(--code);border-radius:16px;padding:10px;border:1px solid rgba(255,255,255,.08);text-align:center}
+figure img{max-width:100%;height:auto;border-radius:10px;display:block;margin:0 auto;background:#fff}
+figure.sm img{max-width:360px}
+figcaption{margin-top:8px;color:var(--muted);font-size:15px;font-weight:700}
+figcaption b{color:var(--orange)}
+/* DEMO */
+.demo{background:linear-gradient(160deg,#3d1b78,#7a2a8f);border-radius:26px;padding:22px;border:3px solid #fff;box-shadow:8px 8px 0 var(--pink)}
+.win{background:#f4f0fa;color:#222;border-radius:12px;overflow:hidden;max-width:380px;margin:0 auto}
+.win .tb{background:#ddd2f0;padding:8px 12px;font-size:13px;font-weight:800;display:flex;gap:8px;align-items:center}
+.win .in{padding:16px;display:grid;gap:8px;text-align:center}
+.win input{padding:9px;border:2px solid #b9a8dc;border-radius:8px;font:16px Nunito;text-align:center}
+.win button{background:var(--pink);color:#fff;border:0;border-radius:10px;padding:11px;font:800 16px Nunito;cursor:pointer}
+.out{margin-top:16px;text-align:center;font-family:Bungee;font-size:clamp(20px,6vw,30px);min-height:46px}
+.out.ok{color:#8dffb4;text-shadow:2px 2px 0 #0b5a2a}.out.no{color:#ff5b6e;text-shadow:2px 2px 0 #5a0b18}
+.users{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;justify-content:center}
+.users button{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.4);border-radius:20px;padding:6px 12px;cursor:pointer;font:700 14px Nunito}
+/* MVC */
+.mvc{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.mvc button{border:0;border-radius:18px;padding:16px 8px;color:#fff;font:400 16px Bungee;cursor:pointer;background:var(--card2)}
+.mvc button.on{background:linear-gradient(135deg,var(--pink),var(--orange))}
+.mvcinfo{margin-top:12px;background:var(--card);border-radius:18px;padding:16px;min-height:96px}
+/* CHARACTERS */
+.row{display:flex;justify-content:space-between;align-items:end;gap:10px;flex-wrap:wrap}
+.shuf{background:var(--orange);color:var(--night);border:0;border-radius:30px;padding:11px 20px;font:400 15px Bungee;cursor:pointer;box-shadow:4px 4px 0 var(--pink)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-top:16px}
+.ch{border-radius:20px;overflow:hidden;background:var(--card);border:3px solid #fff;cursor:pointer;transition:transform .2s;text-align:center;padding:0}
+.ch:hover{transform:rotate(-2deg) scale(1.03)}
+.ch svg{display:block;width:100%;height:auto}
+.ch div{padding:8px 6px 10px;background:var(--night);font-weight:800}
+.ch small{display:block;color:var(--muted);font-weight:400;font-size:13px}
+/* TABLE */
+table{width:100%;border-collapse:collapse;background:var(--card);border-radius:18px;overflow:hidden}
+td,th{padding:10px 14px;text-align:left;border-bottom:1px solid rgba(255,255,255,.08)}
+th{background:var(--card2);font-family:Bungee;font-weight:400;font-size:14px}
+td:first-child{font-family:'Fira Code',monospace;color:#ffd3ec;font-size:14px}
+.tw{overflow-x:auto;border-radius:18px}
+ul.pr{padding-left:20px}
+footer{text-align:center;color:var(--muted);padding:50px 18px 60px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media(max-width:520px){input[type=range]{display:none}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="sun"></div>
+  <div class="palm" style="left:-10px">🌴</div><div class="palm" style="right:-10px">🌴</div>
+  <div class="wrap">
+    <div class="logo">Grand Theft<br>Tkinter<small>окно авторизации</small></div>
+    <p>Учимся делать окна на Python: кнопки, поля ввода и настоящий экран входа. Нажимай на карточки — всё раскроется.</p>
+    <a class="go" href="#lesson">Поехали</a>
+  </div>
+</header>
+
+<!-- МУЗЫКА: положи файл music.mp3 рядом с index.html (или поменяй путь ниже) -->
+<div class="music" id="music">
+  <div class="wrap">
+    <button class="mbtn" id="play" aria-label="Играть / пауза">▶</button>
+    <div class="mtitle">Радио Vice Code<span id="track">Flower In A Hurricane — нажми ▶</span></div>
+    <div class="bars"><i></i><i></i><i></i><i></i></div>
+    <input type="range" id="vol" min="0" max="1" step=".05" value=".6" aria-label="Громкость">
+    <audio id="aud" src="music.mp3" loop preload="none"></audio>
+  </div>
+</div>
+
+<main class="wrap">
+
+<section id="lesson">
+  <h2>Миссия 1: Окно</h2>
+  <p class="lead">Идём по шагам. Открывай карточки по очереди.</p>
+  <div id="steps"></div>
+</section>
+
+<section>
+  <h2>Миссия 2: Как устроен проект</h2>
+  <p class="lead">MVC — как ресторан. Нажми на роль.</p>
+  <div class="mvc">
+    <button data-m="m" class="on">Model</button><button data-m="v">View</button><button data-m="c">Controller</button>
+  </div>
+  <div class="mvcinfo" id="mvcinfo"></div>
+</section>
+
+<section>
+  <h2>Миссия 3: Попробуй сам</h2>
+  <p class="lead">Это работающая копия нашего окна. Выбери героя или введи данные вручную.</p>
+  <div class="demo">
+    <div class="win">
+      <div class="tb">🪟 Мое первое окно</div>
+      <div class="in">
+        <label for="lg">Логин</label><input id="lg" autocomplete="off">
+        <label for="pw">Пароль</label><input id="pw" type="password" autocomplete="off">
+        <button id="enter">Войти</button>
+      </div>
+    </div>
+    <div class="out" id="out" aria-live="polite"></div>
+    <div class="users" id="users"></div>
+  </div>
+</section>
+
+<section>
+  <div class="row">
+    <div><h2>Наши герои</h2><p class="lead" style="margin:0">Первые пятеро — пользователи из <code class="i">user_repository.py</code>. Нажми на героя — он зайдёт в окно.</p></div>
+    <button class="shuf" id="shuf">Новая банда</button>
+  </div>
+  <div class="grid" id="grid"></div>
+</section>
+
+<section>
+  <h2>Шпаргалка</h2>
+  <div class="tw"><table>
+    <tr><th>Команда</th><th>Что делает</th></tr>
+    <tr><td>tk.Tk()</td><td>Создаёт главное окно</td></tr>
+    <tr><td>mainloop()</td><td>Держит окно открытым</td></tr>
+    <tr><td>title()</td><td>Название окна</td></tr>
+    <tr><td>geometry()</td><td>Размер окна</td></tr>
+    <tr><td>iconbitmap()</td><td>Иконка окна</td></tr>
+    <tr><td>tk.Label()</td><td>Надпись</td></tr>
+    <tr><td>tk.Button()</td><td>Кнопка</td></tr>
+    <tr><td>tk.Text()</td><td>Поле для текста</td></tr>
+    <tr><td>pack()</td><td>Ставит элемент в окно</td></tr>
+    <tr><td>get()</td><td>Берёт текст из поля</td></tr>
+    <tr><td>lambda</td><td>Маленькая функция без имени</td></tr>
+  </table></div>
+</section>
+
+<section>
+  <h2>Задания</h2>
+  <details open><summary><span class="ico b">🎯</span><span class="t">Практика<small>6 заданий на закрепление</small></span></summary>
+  <div class="body"><ul class="pr">
+    <li>Поменяй название окна на «Моя программа».</li>
+    <li>Сделай окно 1000 × 700.</li>
+    <li>Замени «Войти» на «Авторизоваться».</li>
+    <li>Добавь ещё одного пользователя в <code class="i">users</code>.</li>
+    <li>Измени приветствие на «Добро пожаловать!».</li>
+    <li>Добавь третье поле для ввода имени.</li>
+  </ul>
+  <div class="tip"><b>Вопрос на подумать:</b> зачем мы вызываем <code class="i">strip()</code> у логина и пароля?</div></div></details>
+</section>
+</main>
+
+<footer>Сделано в стиле «ночной Vice City». Все персонажи — оригинальные, нарисованы кодом.</footer>
+
+<script>
+/* ---------- helpers ---------- */
+const $=s=>document.querySelector(s);
+const esc=t=>t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+function hl(code){
+  let t=esc(code);
+  t=t.replace(/(#.*)$/gm,'<span class="c">$1</span>');
+  t=t.replace(/("[^"\n]*"|f"[^"\n]*")/g,'<span class="s">$1</span>');
+  t=t.replace(/\b(import|from|as|def|class|return|if|else|is|None|pass|lambda|for|in)\b/g,'<span class="k">$1</span>');
+  return t;
+}
+function codeBox(name,code){
+  return `<div class="code"><div class="bar"><i></i><i></i><i></i><span>${name}</span><button data-copy>Копировать</button></div><pre>${hl(code)}</pre></div>`;
+}
+
+/* ---------- lesson steps ---------- */
+const STEPS=[
+ {i:'🪟',t:'Что такое Tkinter',s:'Окна, кнопки и поля на Python',
+  b:`<p>Раньше программы жили в консоли. Tkinter даёт нам <b>настоящее окно</b> с кнопками и полями ввода. Он уже встроен в Python — ставить ничего не надо.</p>`,
+  c:['',`import tkinter as tk`],
+  tip:'<b>Зачем «as tk»?</b> Это короткое имя. Пишем <code class="i">tk.Button</code> вместо <code class="i">tkinter.Button</code>.'},
+ {i:'✨',t:'Первое окно',s:'Три строки — и окно готово',
+  b:`<p><code class="i">tk.Tk()</code> создаёт окно, а <code class="i">mainloop()</code> не даёт ему закрыться и следит за твоими кликами.</p>`,
+  c:['main.py',`import tkinter as tk
+
+main_window = tk.Tk()
+main_window.mainloop()`],
+  tip:'<b>Важно:</b> <code class="i">mainloop()</code> всегда в самом конце программы.',
+  f:[[1,'Первое окно: пока пустое и называется «tk».','sm']]},
+ {i:'⚙️',t:'Настройки в config.py',s:'Название, размер, иконка — в одном месте',
+  b:`<p>Настройки лежат в отдельном файле. Имена пишем ЗАГЛАВНЫМИ — так в Python принято для констант (значений, которые не меняются).</p>`,
+  c:['config.py',`TITLE = "Мое первое окно"
+WIDTH = 800
+HEIGHT = 600
+ICON = "main_window.ico"`],
+  tip:'<b>Иконку</b> (.ico) можно скачать на сайте Icon-icons и положить в папку проекта.',
+  f:[[2,'Окно с нашим названием «Мое первое окно» и размером 800×600.'],
+     [3,'Сайт Icon-icons: здесь много бесплатных иконок.'],
+     [4,'Выбираем вкладку ICO, размер 512px и нажимаем «скачать ICO».'],
+     [5,'Файл main_window.ico кладём в папку проекта рядом с main.py и config.py.','sm']]},
+ {i:'🔗',t:'Подключаем настройки',s:'title, geometry, iconbitmap',
+  b:`<p><code class="i">from config import *</code> берёт все настройки. <code class="i">title()</code> задаёт название, <code class="i">geometry()</code> — размер, а <code class="i">f"{WIDTH}x{HEIGHT}"</code> превращается в строку <code class="i">"800x600"</code>.</p>`,
+  c:['main.py',`import tkinter as tk
+from config import *
+
+main_window = tk.Tk()
+main_window.title(TITLE)
+main_window.geometry(f"{WIDTH}x{HEIGHT}")
+main_window.iconbitmap(ICON)
+main_window.mainloop()`],
+  f:[[6,'Если нужен путь к иконке: правый клик по файлу → Copy Path/Reference…','sm']]},
+ {i:'🔘',t:'Кнопка и поле ввода',s:'Button, Text, pack, get',
+  b:`<p><code class="i">tk.Button</code> — кнопка, <code class="i">tk.Text</code> — поле для текста. <code class="i">command</code> — что случится при нажатии, <code class="i">lambda</code> — маленькая функция без имени. <code class="i">get(1.0, tk.END)</code> забирает весь текст от начала до конца.</p>`,
+  c:['main.py',`textBox = tk.Text(main_window, width=15, height=1)
+textBox.pack()
+
+button = tk.Button(
+    main_window,
+    text="Сказать привет",
+    command=lambda: print(textBox.get(1.0, tk.END))
+)
+button.pack()`],
+  f:[[7,'Результат: у окна появилась иконка, а на нём — кнопка «Сказать привет».']],
+  tip:'<b>Без pack() элемент не появится!</b> Есть ещё <code class="i">grid()</code> (таблица) и <code class="i">place()</code> (точные координаты). С pack() элементы идут по порядку сверху вниз.'},
+ {i:'👤',t:'Model: класс User',s:'Файл User.py — описываем пользователя',
+  b:`<p>У пользователя есть логин, пароль и ФИО. <code class="i">__init__</code> запускается сам, когда мы создаём пользователя. <code class="i">self</code> — это «сам объект». Подчёркивание в <code class="i">_login</code> — знак «используем внутри класса».</p>`,
+  c:['User.py',`class User:
+    def __init__(self, login, password, fio):
+        self._login = login
+        self._password = password
+        self._fio = fio
+
+    def check_password(self, password):
+        return password == self._password
+
+    def get_name(self):
+        return self._fio
+
+    def get_login(self):
+        return self._login`]},
+ {i:'🗄️',t:'Репозиторий',s:'user_repository.py — где живут пользователи',
+  b:`<p>Сначала список пользователей, потом <b>словарь</b>: ключ — логин, значение — пользователь. Так искать быстрее. <code class="i">.get()</code> вернёт <code class="i">None</code>, если логина нет — и ошибки не будет.</p>`,
+  c:['user_repository.py',`from User import User
+
+users = [
+    User("admin", "admin", "Михаил Ануфрев"),
+    User("winter", "is_near", "Джон Сноу"),
+    User("jane", "password", "Джейн Смит"),
+    User("bob", "secret123", "Боб Джонс"),
+    User("susan", "p@ssw0rd", "Сьюзан Вонг"),
+]
+users_repos = {user.get_login(): user for user in users}
+users.clear()
+
+def get_user_by_login(login):
+    return users_repos.get(login)`]},
+ {i:'🧠',t:'Controller',s:'controller.py — проверяем логин и пароль',
+  b:`<p>Сначала считаем, что доступ закрыт. Ищем пользователя; если нашли и пароль подошёл — меняем сообщение. <code class="i">strip()</code> убирает лишние пробелы по краям.</p>`,
+  c:['controller.py',`import user_repository
+
+def auth_user(login, password):
+    user = user_repository.get_user_by_login(login.strip())
+    message: str = "Доступ запрещен"
+    if user is None:
+        pass
+    else:
+        if user.check_password(password.strip()):
+            message = f"Привет - {user.get_name()}"
+    print(message)`]},
+ {i:'🎨',t:'View: окно входа',s:'view.py — собираем всё вместе',
+  b:`<p><code class="i">tk.Label</code> — надпись. Кнопка «Войти» по клику отправляет текст из полей в контроллер. Строка <code class="i">if __name__ == "__main__"</code> запускает окно, только если мы открыли именно этот файл.</p>`,
+  c:['view.py',`import tkinter as tk
+from config import *
+import controller
+
+main_window = tk.Tk()
+main_window.title(TITLE)
+main_window.geometry(f"{WIDTH}x{HEIGHT}")
+main_window.iconbitmap(ICON)
+
+tk.Label(main_window, text="Логин").pack()
+login_text = tk.Text(main_window, width=15, height=1)
+login_text.pack()
+
+tk.Label(main_window, text="Пароль").pack()
+password_text = tk.Text(main_window, width=15, height=1)
+password_text.pack()
+
+auth_button = tk.Button(
+    main_window,
+    text="Войти",
+    command=lambda: controller.auth_user(
+        login_text.get(1.0, tk.END),
+        password_text.get(1.0, tk.END)
+    )
+)
+auth_button.pack()
+
+if __name__ == "__main__":
+    main_window.mainloop()`],
+  tip:'<b>Запускай через view.py.</b> Пароль здесь виден при вводе. В настоящей форме берут <code class="i">Entry</code> с <code class="i">show="*"</code>, а пароли не хранят открытым текстом.'}
+];
+$('#steps').innerHTML=STEPS.map((s,n)=>`
+<details ${n==0?'open':''}><summary><span class="ico ${n%2?'b':''}">${s.i}</span>
+<span class="t">${s.t}<small>${s.s}</small></span></summary>
+<div class="body">${s.b}${s.c[1]?codeBox(s.c[0]||'main.py',s.c[1]):''}${(s.f||[]).map(f=>`<figure class="${f[2]||''}"><a href="images/risunok-${f[0]}.jpg" target="_blank" rel="noopener"><img src="images/risunok-${f[0]}.jpg" alt="Рисунок ${f[0]}" loading="lazy"></a><figcaption><b>Рисунок ${f[0]}.</b> ${f[1]}</figcaption></figure>`).join('')}${s.tip?`<div class="tip">${s.tip}</div>`:''}</div></details>`).join('');
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-copy]'); if(!b) return;
+  const txt=b.closest('.code').querySelector('pre').innerText;
+  (navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).catch(()=>{}).finally(()=>{
+    b.textContent='Готово!'; setTimeout(()=>b.textContent='Копировать',1400);});
+});
+
+/* ---------- MVC ---------- */
+const MVC={
+ m:'<b>Model (модель)</b> — хранит данные. У нас это <code class="i">User.py</code> и <code class="i">user_repository.py</code>. В ресторане — это список блюд.',
+ v:'<b>View (представление)</b> — то, что видит пользователь: окно, надписи, поля и кнопка. У нас это <code class="i">view.py</code>. В ресторане — меню на столе.',
+ c:'<b>Controller (контроллер)</b> — принимает действия и решает, что делать. У нас это <code class="i">controller.py</code>: он проверяет логин и пароль. В ресторане — официант.'};
+function mvc(k){document.querySelectorAll('.mvc button').forEach(b=>b.classList.toggle('on',b.dataset.m===k));$('#mvcinfo').innerHTML=MVC[k];}
+document.querySelectorAll('.mvc button').forEach(b=>b.onclick=()=>mvc(b.dataset.m));mvc('m');
+
+/* ---------- Auth demo ---------- */
+const USERS=[
+ {l:'admin',p:'admin',n:'Михаил Ануфрев'},{l:'winter',p:'is_near',n:'Джон Сноу'},
+ {l:'jane',p:'password',n:'Джейн Смит'},{l:'bob',p:'secret123',n:'Боб Джонс'},{l:'susan',p:'p@ssw0rd',n:'Сьюзан Вонг'}];
+const repo=Object.fromEntries(USERS.map(u=>[u.l,u]));
+function auth(login,pass){
+  const u=repo[login.trim()]; let msg='Доступ запрещен',ok=false;
+  if(u&&u.p===pass.trim()){msg='Привет - '+u.n;ok=true;}
+  const o=$('#out');o.textContent=msg;o.className='out '+(ok?'ok':'no');
+}
+$('#enter').onclick=()=>auth($('#lg').value,$('#pw').value);
+$('#pw').onkeydown=e=>{if(e.key==='Enter')$('#enter').click()};
+$('#users').innerHTML=USERS.map((u,i)=>`<button data-u="${i}">${u.l}</button>`).join('');
+$('#users').onclick=e=>{const b=e.target.closest('[data-u]');if(!b)return;const u=USERS[b.dataset.u];
+  $('#lg').value=u.l;$('#pw').value=u.p;auth(u.l,u.p);};
+
+/* ---------- Characters (original SVG, GTA-style flat art) ---------- */
+function rng(seed){let s=seed>>>0;return()=>((s=Math.imul(s^s>>>15,2246822507)+1013904223>>>0)/4294967296);}
+const SKIN=['#f2c9a0','#d9a273','#b57a4e','#8a5636','#5e3a24','#ffd9bd'];
+const HAIR=['#1b1b1b','#4a2a14','#c9822b','#f2d27a','#ff3ea5','#5b8cff','#9a9a9a'];
+const SHIRT=['#ff3ea5','#5b8cff','#ffa94d','#ffffff','#7a2ad6','#2ad6b0','#ff5b6e','#222'];
+const BG=[['#ff7aa8','#ffcf7a'],['#7a5bff','#ff9ed0'],['#5bd0ff','#c9a8ff'],['#ffa94d','#ff3ea5'],['#2ad6b0','#5b8cff']];
+function face(r,o){
+  const sk=SKIN[o.sk],hr=HAIR[o.hr],sh=SHIRT[o.sh],bg=BG[o.bg];
+  let hair='';
+  if(o.hs==0)hair=`<path d="M30 46c0-22 8-30 20-30s20 8 20 30c-6-10-12-14-20-14s-14 4-20 14z" fill="${hr}"/>`;
+  if(o.hs==1)hair=`<path d="M28 50c-4-30 10-40 22-40s28 10 22 40c-2-12-8-20-22-20s-20 8-22 20z" fill="${hr}"/><path d="M28 50c-3 18 1 30 4 34V52zM72 50c3 18-1 30-4 34V52z" fill="${hr}"/>`;
+  if(o.hs==2)hair=`<path d="M30 44c2-20 12-26 20-26s18 6 20 26c-8-4-12-8-20-8s-12 4-20 8z" fill="${hr}"/><rect x="26" y="38" width="48" height="6" rx="3" fill="${hr}"/>`;
+  if(o.hs==3)hair=`<path d="M34 40c0-12 8-16 16-16s16 4 16 16z" fill="${hr}" opacity=".0"/><path d="M28 46c-2-22 12-30 22-30 12 0 24 8 22 30-4-6-8-9-12-10l-10-6-10 6c-4 1-8 4-12 10z" fill="${hr}"/>`;
+  let acc='';
+  if(o.ac==0)acc=`<rect x="31" y="49" width="17" height="10" rx="4" fill="#111"/><rect x="52" y="49" width="17" height="10" rx="4" fill="#111"/><rect x="47" y="52" width="6" height="2" fill="#111"/>`;
+  if(o.ac==1)acc=`<circle cx="40" cy="54" r="3" fill="#222"/><circle cx="60" cy="54" r="3" fill="#222"/>`;
+  if(o.ac==2)acc=`<path d="M26 46c0-24 48-24 48 0" fill="none" stroke="#111" stroke-width="5"/><rect x="21" y="44" width="9" height="16" rx="4" fill="#ffa94d"/><rect x="70" y="44" width="9" height="16" rx="4" fill="#ffa94d"/><circle cx="40" cy="54" r="3" fill="#222"/><circle cx="60" cy="54" r="3" fill="#222"/>`;
+  if(o.ac==3)acc=`<path d="M28 42c0-18 44-18 44 0z" fill="${SHIRT[(o.sh+3)%8]}"/><rect x="26" y="40" width="58" height="5" rx="2" fill="${SHIRT[(o.sh+3)%8]}"/><circle cx="40" cy="54" r="3" fill="#222"/><circle cx="60" cy="54" r="3" fill="#222"/>`;
+  const chain=o.ch?`<path d="M38 96q12 14 24 0" fill="none" stroke="#ffd45a" stroke-width="3"/><circle cx="50" cy="106" r="4" fill="#ffd45a"/>`:'';
+  const mouth=o.mo?`<path d="M42 70q8 6 16 0" fill="none" stroke="#5a2a1a" stroke-width="2.5" stroke-linecap="round"/>`:`<path d="M43 71h14" stroke="#5a2a1a" stroke-width="2.5" stroke-linecap="round"/>`;
+  const id='g'+o.id;
+  return `<svg viewBox="0 0 100 130" role="img" aria-label="${o.n}"><defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${bg[0]}"/><stop offset="1" stop-color="${bg[1]}"/></linearGradient></defs>
+  <rect width="100" height="130" fill="url(#${id})"/>
+  <circle cx="78" cy="28" r="14" fill="#fff" opacity=".35"/>
+  <path d="M0 130V108q10-16 34-18h32q24 2 34 18v22z" fill="${sh}" stroke="#1a0b2e" stroke-width="3"/>
+  <rect x="42" y="78" width="16" height="16" fill="${sk}" stroke="#1a0b2e" stroke-width="3"/>
+  ${hs0(o)}
+  <ellipse cx="50" cy="56" rx="22" ry="25" fill="${sk}" stroke="#1a0b2e" stroke-width="3"/>
+  ${hair}${acc}${mouth}${chain}
+  </svg>`;
+}
+function hs0(o){return o.hs==1?`<path d="M28 50c-4 20 0 34 4 38h36c4-4 8-18 4-38z" fill="${HAIR[o.hr]}"/>`:'';}
+const NAMES=[['Админ','Босс района'],['Винтер','Тихий стратег'],['Джейн','Гонщица'],['Боб','Водитель'],['Сьюзан','Хакер'],
+ ['Рико','Механик'],['Лола','Диджей'],['Тони','Бармен'],['Мия','Пилот лодки'],['Кид Нео','Курьер'],['Роза','Фотограф'],['Дэнни','Серфер'],
+ ['Макс','Таксист'],['Зоя','Стилист'],['Лёва','Охранник'],['Нина','Репортёр']];
+let seed=7;
+function gang(){
+  const r=rng(seed);let h='';
+  const pool=NAMES.slice(5).sort(()=>r()-.5);
+  const list=NAMES.slice(0,5).concat(pool.slice(0,7));
+  list.forEach((nm,i)=>{
+    const o={id:seed+'_'+i,n:nm[0],sk:r()*6|0,hr:r()*7|0,hs:r()*4|0,sh:r()*8|0,bg:r()*5|0,ac:r()*4|0,ch:r()<.4,mo:r()<.6};
+    h+=`<button class="ch" data-i="${i}" aria-label="${nm[0]}">${face(r,o)}<div>${nm[0]}<small>${nm[1]}</small></div></button>`;
+  });
+  $('#grid').innerHTML=h;
+}
+$('#grid').onclick=e=>{const b=e.target.closest('.ch');if(!b)return;const i=+b.dataset.i;
+  if(i<5){const u=USERS[i];$('#lg').value=u.l;$('#pw').value=u.p;auth(u.l,u.p);$('#out').scrollIntoView({behavior:'smooth',block:'center'});}
+  else{$('#lg').value=b.querySelector('div').firstChild.textContent.toLowerCase();$('#pw').value='1234';auth($('#lg').value,$('#pw').value);$('#out').scrollIntoView({behavior:'smooth',block:'center'});}};
+$('#shuf').onclick=()=>{seed=(seed*31+17)%100000;gang();};
+gang();
+
+/* ---------- Music ---------- */
+const aud=$('#aud'),pl=$('#play');
+pl.onclick=()=>{
+  if(aud.paused){aud.play().then(()=>{pl.textContent='❚❚';$('#music').classList.add('playing');$('#track').textContent='Flower In A Hurricane';})
+    .catch(()=>{$('#track').textContent='Добавь файл music.mp3 в папку сайта';});}
+  else{aud.pause();pl.textContent='▶';$('#music').classList.remove('playing');}
+};
+$('#vol').oninput=e=>aud.volume=e.target.value;aud.volume=.6;
+</script>
+</body>
+</html>
